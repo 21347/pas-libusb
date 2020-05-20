@@ -2,7 +2,6 @@
 Unit PasLibUsbUtils;
 
 Interface
-Uses SysUtils,StrUtils,Classes,BaseUnix,Unix;
 
 Const HexChars = '0123456789ABCDEF';
 
@@ -10,6 +9,14 @@ Function HexToInt(St:ShortString):Int64;
 Function GetUSec : UInt64;
 
 Implementation
+
+Uses
+  SysUtils,
+{$IFNDEF WINDOWS}
+  Unix;
+{$ELSE}
+  Windows;
+{$ENDIF}
 
 Function HexToInt(St:ShortString):Int64;
 Var I,J : LongInt;
@@ -24,11 +31,28 @@ Begin
     End;
 End;
 
+{$IFNDEF WINDOWS}
+
 Function GetUSec : UInt64;
 Var TZ : TimeVal;
 Begin
   fpGetTimeOfDay(@TZ,Nil);
   Result := TZ.tv_usec + TZ.tv_sec*1000000;
 End;
+
+{$ELSE}
+
+Var PerfFreq : Int64;
+
+Function GetUSec : UInt64;
+Var PerfCount : Int64;
+Begin
+  Windows.QueryPerformanceCounter(PerfCount);
+  Result := Trunc((Extended(PerfCount) * 1E6) / PerfFreq);  // calculated time benched against Sleep(), seems OK
+End;
+
+Initialization
+  Windows.QueryPerformanceFrequency(PerfFreq);  // return value in Hz
+{$ENDIF}
 
 End.

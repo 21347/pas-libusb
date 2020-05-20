@@ -32,7 +32,7 @@ Type
     Constructor Create(ADev:PUSBDevice);
     Constructor Create(AidVendor,AidProduct:Word);
     Function ReadMem (Pos:LongInt;Out   Data;Length:LongInt):LongInt;
-    Function WriteMem(Pos:LongInt;Const Data;Length:LongInt):LongInt;
+    Function WriteMem(Pos:LongInt;Var   Data;Length:LongInt):LongInt;
     Function ResetCPU(ResetBit:Byte) : LongInt;
     Function LoadMem(HexRecord:PIntelHexRecord):LongInt;
     Procedure DownloadFirmware(AFirmware:String;StartImmediately:Boolean=true);
@@ -43,7 +43,7 @@ Const ANCHOR_LOAD_INTERNAL = $A0;     { Vendor specific request code for Anchor 
       CPUCS_8051RESET      = $01;     { 1: reset 8051, 0: run }
 
 Implementation
-Uses SysUtils,Errors;
+Uses SysUtils;
 
 Const
   EZUSBUnconfiguredConfiguration = 1;
@@ -83,7 +83,7 @@ End;
  * returns: >0 .... count of bytes written
  *          <0 .... error number
  *)
-Function TUSBDeviceEZUSB.WriteMem(Pos:LongInt;Const Data;Length:LongInt) : LongInt;
+Function TLibUsbDeviceEZUSB.WriteMem(Pos:LongInt;Var Data;Length:LongInt) : LongInt;
 Begin
   Result := FControl.ControlMsg(USB_ENDPOINT_OUT or USB_RECIP_DEVICE or USB_TYPE_VENDOR,ANCHOR_LOAD_INTERNAL,Pos,0,Data,Length,300);
 End;

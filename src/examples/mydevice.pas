@@ -24,7 +24,7 @@ Unit MyDevice;
 Interface
 
 Uses
-  Classes,SysUtils,BaseUnix,CTypes,LibUSB,USB,EZUSB;
+  Classes,SysUtils,CTypes,LibUsb,LibUsbOop,LibUsbUtil,EZUSB;
 
 Const
   USBVendEmpty  = $0547;   // Cypress
@@ -94,7 +94,7 @@ Type
     Class Function FindFirmware(AName, AProgram : String) : String;
   protected
     Function  SendCommand   (Cmd:Byte;Value:Word;Index:Word) : Integer;
-    Function  SendCommandOut(Cmd:Byte;Value:Word;Index:Word;Const Buf;Length:Integer) : Integer;
+    Function  SendCommandOut(Cmd:Byte;Value:Word;Index:Word;Var   Buf;Length:Integer) : Integer;
     Function  SendCommandIn (Cmd:Byte;Value:Word;Index:Word;Out   Buf;Length:Integer) : Integer;
   public
     Procedure GetVersion(Out Firmware:UInt16);
@@ -172,7 +172,7 @@ End;
  *
  * This function uses an out data phase.
  *)
-Function TMyDevice.SendCommandOut(Cmd:Byte;Value:Word;Index:Word;Const Buf;Length:Integer):Integer;
+Function TMyDevice.SendCommandOut(Cmd:Byte;Value:Word;Index:Word;Var Buf;Length:Integer):Integer;
 Begin
   Result := FControl.ControlMsg(
     USB_ENDPOINT_OUT or USB_TYPE_VENDOR or USB_RECIP_DEVICE { bmRequestType },
@@ -335,7 +335,7 @@ End;
  *)
 Function FindFileInPath(AName,APath:String) : String;
 Begin
-  APath := StrReplace(APath,'~',fpGetEnv('HOME'));
+  APath := StrReplace(APath,'~',GetEnvironmentVariable('HOME'));
   { !!!TODO!!! $HOME points to "root"'s home when fork()ed before! Must find a function which reads /etc/passwd }
   APath := StrReplace(APath,'::',':');
 
@@ -354,9 +354,9 @@ Var Path : String;
 Begin
   { search controller firmware file }
   Path := '.:~/.'+AProgram+':'
-          +fpGetEnv(UpperCase(AProgram)+'FIRMWAREPATH')+':'
+          +GetEnvironmentVariable(UpperCase(AProgram)+'FIRMWAREPATH')+':'
           +ExtractFilePath(ExpandFileName(ParamStr(0)))+':'
-          +fpGetEnv('PATH')
+          +GetEnvironmentVariable('PATH')
           +':/etc/'+AProgram;
   ParamStr(0); { strange, this seems to be necessary to free memory previously reserved by ParamStr }
   Result := FindFileInPath(AName,Path);
