@@ -367,7 +367,7 @@ Type
   End;
 
 Implementation
-Uses CTypes,PasLibUsbUtils,Math;
+Uses CTypes,usb.PasLibUsbUtils,Math;
 
 (**
  * Helper class to use TLibUsbDeviceMatchFunc instead of TLibUsbDeviceMatchMethod
