@@ -1,8 +1,7 @@
-src/backup
-src/examples/backup
-src/examples/lib
+**/backup/
+**/lib/
 *.bak
 *.lps
 *.dbg
-src/examples/test1library
+test1library
 *.exe
