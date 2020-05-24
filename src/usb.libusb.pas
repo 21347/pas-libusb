@@ -1413,7 +1413,10 @@ End;
 (* Dynamic Linking                                                          *)
 (****************************************************************************)
 
-Var dllHandle : TLibHandle = 0;
+Var
+  dllHandle : TLibHandle = 0;
+  dllLoaded : boolean = false;
+  dllNewVersion: boolean = false;
 
 Procedure initDLL;
 Begin
@@ -1422,75 +1425,145 @@ Begin
 {$ELSE}
   dllHandle := LoadLibrary('libusb-1.0.so');
 {$ENDIF}
-  if dllHandle = 0 then
-    raise Exception.Create('Couldn''t load dynamic library libusb.');
-  pointer(libusb_init) := GetProcedureAddress(dllHandle, 'libusb_init');
-  pointer(libusb_exit) := GetProcedureAddress(dllHandle, 'libusb_exit');
-  pointer(libusb_set_debug) := GetProcedureAddress(dllHandle, 'libusb_set_debug');
-  pointer(libusb_get_version) := GetProcedureAddress(dllHandle, 'libusb_get_version');
-  pointer(libusb_has_capability) := GetProcedureAddress(dllHandle, 'libusb_has_capability');
-  pointer(libusb_error_name) := GetProcedureAddress(dllHandle, 'libusb_error_name');
-  pointer(libusb_get_device_list) := GetProcedureAddress(dllHandle, 'libusb_get_device_list');
-  pointer(libusb_free_device_list) := GetProcedureAddress(dllHandle, 'libusb_free_device_list');
-  pointer(libusb_ref_device) := GetProcedureAddress(dllHandle, 'libusb_ref_device');
-  pointer(libusb_unref_device) := GetProcedureAddress(dllHandle, 'libusb_unref_device');
-  pointer(libusb_get_configuration) := GetProcedureAddress(dllHandle, 'libusb_get_configuration');
-  pointer(libusb_get_device_descriptor) := GetProcedureAddress(dllHandle, 'libusb_get_device_descriptor');
-  pointer(libusb_get_active_config_descriptor) := GetProcedureAddress(dllHandle, 'libusb_get_active_config_descriptor');
-  pointer(libusb_get_config_descriptor) := GetProcedureAddress(dllHandle, 'libusb_get_config_descriptor');
-  pointer(libusb_get_config_descriptor_by_value) := GetProcedureAddress(dllHandle, 'libusb_get_config_descriptor_by_value');
-  pointer(libusb_free_config_descriptor) := GetProcedureAddress(dllHandle, 'libusb_free_config_descriptor');
-  pointer(libusb_get_bus_number) := GetProcedureAddress(dllHandle, 'libusb_get_bus_number');
-  pointer(libusb_get_port_number) := GetProcedureAddress(dllHandle, 'libusb_get_port_number');
-  pointer(libusb_get_parent) := GetProcedureAddress(dllHandle, 'libusb_get_parent');
-  pointer(libusb_get_port_path) := GetProcedureAddress(dllHandle, 'libusb_get_port_path');
-  pointer(libusb_get_device_address) := GetProcedureAddress(dllHandle, 'libusb_get_device_address');
-  pointer(libusb_get_device_speed) := GetProcedureAddress(dllHandle, 'libusb_get_device_speed');
-  pointer(libusb_get_max_packet_size) := GetProcedureAddress(dllHandle, 'libusb_get_max_packet_size');
-  pointer(libusb_get_max_iso_packet_size) := GetProcedureAddress(dllHandle, 'libusb_get_max_iso_packet_size');
-  pointer(libusb_open) := GetProcedureAddress(dllHandle, 'libusb_open');
-  pointer(libusb_close) := GetProcedureAddress(dllHandle, 'libusb_close');
-  pointer(libusb_get_device) := GetProcedureAddress(dllHandle, 'libusb_get_device');
-  pointer(libusb_set_configuration) := GetProcedureAddress(dllHandle, 'libusb_set_configuration');
-  pointer(libusb_claim_interface) := GetProcedureAddress(dllHandle, 'libusb_claim_interface');
-  pointer(libusb_release_interface) := GetProcedureAddress(dllHandle, 'libusb_release_interface');
-  pointer(libusb_open_device_with_vid_pid) := GetProcedureAddress(dllHandle, 'libusb_open_device_with_vid_pid');
-  pointer(libusb_set_interface_alt_setting) := GetProcedureAddress(dllHandle, 'libusb_set_interface_alt_setting');
-  pointer(libusb_clear_halt) := GetProcedureAddress(dllHandle, 'libusb_clear_halt');
-  pointer(libusb_reset_device) := GetProcedureAddress(dllHandle, 'libusb_reset_device');
-  pointer(libusb_kernel_driver_active) := GetProcedureAddress(dllHandle, 'libusb_kernel_driver_active');
-  pointer(libusb_detach_kernel_driver) := GetProcedureAddress(dllHandle, 'libusb_detach_kernel_driver');
-  pointer(libusb_attach_kernel_driver) := GetProcedureAddress(dllHandle, 'libusb_attach_kernel_driver');
-  pointer(libusb_alloc_transfer) := GetProcedureAddress(dllHandle, 'libusb_alloc_transfer');
-  pointer(libusb_submit_transfer) := GetProcedureAddress(dllHandle, 'libusb_submit_transfer');
-  pointer(libusb_cancel_transfer) := GetProcedureAddress(dllHandle, 'libusb_cancel_transfer');
-  pointer(libusb_free_transfer) := GetProcedureAddress(dllHandle, 'libusb_free_transfer');
-  pointer(libusb_control_transfer) := GetProcedureAddress(dllHandle, 'libusb_control_transfer');
-  pointer(libusb_bulk_transfer) := GetProcedureAddress(dllHandle, 'libusb_bulk_transfer');
-  pointer(libusb_interrupt_transfer) := GetProcedureAddress(dllHandle, 'libusb_interrupt_transfer');
-  pointer(libusb_get_string_descriptor_ascii) := GetProcedureAddress(dllHandle, 'libusb_get_string_descriptor_ascii');
-  pointer(libusb_try_lock_events) := GetProcedureAddress(dllHandle, 'libusb_try_lock_events');
-  pointer(libusb_lock_events) := GetProcedureAddress(dllHandle, 'libusb_lock_events');
-  pointer(libusb_unlock_events) := GetProcedureAddress(dllHandle, 'libusb_unlock_events');
-  pointer(libusb_event_handling_ok) := GetProcedureAddress(dllHandle, 'libusb_event_handling_ok');
-  pointer(libusb_event_handler_active) := GetProcedureAddress(dllHandle, 'libusb_event_handler_active');
-  pointer(libusb_lock_event_waiters) := GetProcedureAddress(dllHandle, 'libusb_lock_event_waiters');
-  pointer(libusb_unlock_event_waiters) := GetProcedureAddress(dllHandle, 'libusb_unlock_event_waiters');
-  pointer(libusb_wait_for_event) := GetProcedureAddress(dllHandle, 'libusb_wait_for_event');
-  pointer(libusb_handle_events_timeout) := GetProcedureAddress(dllHandle, 'libusb_handle_events_timeout');
-  pointer(libusb_handle_events_timeout_completed) := GetProcedureAddress(dllHandle, 'libusb_handle_events_timeout_completed');
-  pointer(libusb_handle_events) := GetProcedureAddress(dllHandle, 'libusb_handle_events');
-  pointer(libusb_handle_events_completed) := GetProcedureAddress(dllHandle, 'libusb_handle_events_completed');
-  pointer(libusb_handle_events_locked) := GetProcedureAddress(dllHandle, 'libusb_handle_events_locked');
-  pointer(libusb_pollfds_handle_timeouts) := GetProcedureAddress(dllHandle, 'libusb_pollfds_handle_timeouts');
-  pointer(libusb_get_next_timeout) := GetProcedureAddress(dllHandle, 'libusb_get_next_timeout');
-  pointer(libusb_get_pollfds) := GetProcedureAddress(dllHandle, 'libusb_get_pollfds');
-  pointer(libusb_set_pollfd_notifiers) := GetProcedureAddress(dllHandle, 'libusb_set_pollfd_notifiers');
+  if dllHandle <> NilHandle then begin
+    //default to success
+    dllLoaded := true;
+    //Expect it to be new version of LibUSB 1.0...
+    //(will check for libusb_get_port_number and libusb_get_port_path)
+    dllNewVersion := true;
+
+    pointer(libusb_init) := GetProcedureAddress(dllHandle, 'libusb_init');   
+    if pointer(libusb_init) = nil then dllLoaded:=false;
+    pointer(libusb_exit) := GetProcedureAddress(dllHandle, 'libusb_exit');              
+    if pointer(libusb_exit) = nil then dllLoaded:=false;
+    pointer(libusb_set_debug) := GetProcedureAddress(dllHandle, 'libusb_set_debug');    
+    if pointer(libusb_set_debug) = nil then dllLoaded:=false;
+    pointer(libusb_get_version) := GetProcedureAddress(dllHandle, 'libusb_get_version');          
+    if pointer(libusb_get_version) = nil then dllLoaded:=false;
+    pointer(libusb_has_capability) := GetProcedureAddress(dllHandle, 'libusb_has_capability');               
+    if pointer(libusb_has_capability) = nil then dllLoaded:=false;
+    pointer(libusb_error_name) := GetProcedureAddress(dllHandle, 'libusb_error_name');   
+    if pointer(libusb_error_name) = nil then dllLoaded:=false;
+    pointer(libusb_get_device_list) := GetProcedureAddress(dllHandle, 'libusb_get_device_list');            
+    if pointer(libusb_get_device_list) = nil then dllLoaded:=false;
+    pointer(libusb_free_device_list) := GetProcedureAddress(dllHandle, 'libusb_free_device_list');    
+    if pointer(libusb_free_device_list) = nil then dllLoaded:=false;
+    pointer(libusb_ref_device) := GetProcedureAddress(dllHandle, 'libusb_ref_device');  
+    if pointer(libusb_ref_device) = nil then dllLoaded:=false;
+    pointer(libusb_unref_device) := GetProcedureAddress(dllHandle, 'libusb_unref_device'); 
+    if pointer(libusb_unref_device) = nil then dllLoaded:=false;
+    pointer(libusb_get_configuration) := GetProcedureAddress(dllHandle, 'libusb_get_configuration');
+    if pointer(libusb_get_configuration) = nil then dllLoaded:=false;
+    pointer(libusb_get_device_descriptor) := GetProcedureAddress(dllHandle, 'libusb_get_device_descriptor');
+    if pointer(libusb_get_device_descriptor) = nil then dllLoaded:=false;
+    pointer(libusb_get_active_config_descriptor) := GetProcedureAddress(dllHandle, 'libusb_get_active_config_descriptor');
+    if pointer(libusb_get_active_config_descriptor) = nil then dllLoaded:=false;
+    pointer(libusb_get_config_descriptor) := GetProcedureAddress(dllHandle, 'libusb_get_config_descriptor');
+    if pointer(libusb_get_config_descriptor) = nil then dllLoaded:=false;
+    pointer(libusb_get_config_descriptor_by_value) := GetProcedureAddress(dllHandle, 'libusb_get_config_descriptor_by_value');
+    if pointer(libusb_get_config_descriptor_by_value) = nil then dllLoaded:=false;
+    pointer(libusb_free_config_descriptor) := GetProcedureAddress(dllHandle, 'libusb_free_config_descriptor');
+    if pointer(libusb_free_config_descriptor) = nil then dllLoaded:=false;
+    pointer(libusb_get_bus_number) := GetProcedureAddress(dllHandle, 'libusb_get_bus_number');
+    if pointer(libusb_get_bus_number) = nil then dllLoaded:=false;
+    pointer(libusb_get_port_number) := GetProcedureAddress(dllHandle, 'libusb_get_port_number');
+    if pointer(libusb_get_port_number) = nil then dllNewVersion:=false;
+    pointer(libusb_get_parent) := GetProcedureAddress(dllHandle, 'libusb_get_parent');
+    if pointer(libusb_get_parent) = nil then dllLoaded:=false;
+    pointer(libusb_get_port_path) := GetProcedureAddress(dllHandle, 'libusb_get_port_path');
+    if pointer(libusb_get_port_path) = nil then dllNewVersion:=false;
+    pointer(libusb_get_device_address) := GetProcedureAddress(dllHandle, 'libusb_get_device_address');
+    if pointer(libusb_get_device_address) = nil then dllLoaded:=false;
+    pointer(libusb_get_device_speed) := GetProcedureAddress(dllHandle, 'libusb_get_device_speed');
+    if pointer(libusb_get_device_speed) = nil then dllLoaded:=false;
+    pointer(libusb_get_max_packet_size) := GetProcedureAddress(dllHandle, 'libusb_get_max_packet_size');
+    if pointer(libusb_get_max_packet_size) = nil then dllLoaded:=false;
+    pointer(libusb_get_max_iso_packet_size) := GetProcedureAddress(dllHandle, 'libusb_get_max_iso_packet_size');
+    if pointer(libusb_get_max_iso_packet_size) = nil then dllLoaded:=false;
+    pointer(libusb_open) := GetProcedureAddress(dllHandle, 'libusb_open');
+    if pointer(libusb_open) = nil then dllLoaded:=false;
+    pointer(libusb_close) := GetProcedureAddress(dllHandle, 'libusb_close');
+    if pointer(libusb_close) = nil then dllLoaded:=false;
+    pointer(libusb_get_device) := GetProcedureAddress(dllHandle, 'libusb_get_device');
+    if pointer(libusb_get_device) = nil then dllLoaded:=false;
+    pointer(libusb_set_configuration) := GetProcedureAddress(dllHandle, 'libusb_set_configuration');
+    if pointer(libusb_set_configuration) = nil then dllLoaded:=false;
+    pointer(libusb_claim_interface) := GetProcedureAddress(dllHandle, 'libusb_claim_interface');
+    if pointer(libusb_claim_interface) = nil then dllLoaded:=false;
+    pointer(libusb_release_interface) := GetProcedureAddress(dllHandle, 'libusb_release_interface');
+    if pointer(libusb_release_interface) = nil then dllLoaded:=false;
+    pointer(libusb_open_device_with_vid_pid) := GetProcedureAddress(dllHandle, 'libusb_open_device_with_vid_pid');
+    if pointer(libusb_open_device_with_vid_pid) = nil then dllLoaded:=false;
+    pointer(libusb_set_interface_alt_setting) := GetProcedureAddress(dllHandle, 'libusb_set_interface_alt_setting');
+    if pointer(libusb_set_interface_alt_setting) = nil then dllLoaded:=false;
+    pointer(libusb_clear_halt) := GetProcedureAddress(dllHandle, 'libusb_clear_halt');
+    if pointer(libusb_clear_halt) = nil then dllLoaded:=false;
+    pointer(libusb_reset_device) := GetProcedureAddress(dllHandle, 'libusb_reset_device');
+    if pointer(libusb_reset_device) = nil then dllLoaded:=false;
+    pointer(libusb_kernel_driver_active) := GetProcedureAddress(dllHandle, 'libusb_kernel_driver_active');
+    if pointer(libusb_kernel_driver_active) = nil then dllLoaded:=false;
+    pointer(libusb_detach_kernel_driver) := GetProcedureAddress(dllHandle, 'libusb_detach_kernel_driver');
+    if pointer(libusb_detach_kernel_driver) = nil then dllLoaded:=false;
+    pointer(libusb_attach_kernel_driver) := GetProcedureAddress(dllHandle, 'libusb_attach_kernel_driver');
+    if pointer(libusb_attach_kernel_driver) = nil then dllLoaded:=false;
+    pointer(libusb_alloc_transfer) := GetProcedureAddress(dllHandle, 'libusb_alloc_transfer');
+    if pointer(libusb_alloc_transfer) = nil then dllLoaded:=false;
+    pointer(libusb_submit_transfer) := GetProcedureAddress(dllHandle, 'libusb_submit_transfer');
+    if pointer(libusb_submit_transfer) = nil then dllLoaded:=false;
+    pointer(libusb_cancel_transfer) := GetProcedureAddress(dllHandle, 'libusb_cancel_transfer');
+    if pointer(libusb_cancel_transfer) = nil then dllLoaded:=false;
+    pointer(libusb_free_transfer) := GetProcedureAddress(dllHandle, 'libusb_free_transfer');
+    if pointer(libusb_free_transfer) = nil then dllLoaded:=false;
+    pointer(libusb_control_transfer) := GetProcedureAddress(dllHandle, 'libusb_control_transfer');
+    if pointer(libusb_control_transfer) = nil then dllLoaded:=false;
+    pointer(libusb_bulk_transfer) := GetProcedureAddress(dllHandle, 'libusb_bulk_transfer');
+    if pointer(libusb_bulk_transfer) = nil then dllLoaded:=false;
+    pointer(libusb_interrupt_transfer) := GetProcedureAddress(dllHandle, 'libusb_interrupt_transfer');
+    if pointer(libusb_interrupt_transfer) = nil then dllLoaded:=false;
+    pointer(libusb_get_string_descriptor_ascii) := GetProcedureAddress(dllHandle, 'libusb_get_string_descriptor_ascii');
+    if pointer(libusb_get_string_descriptor_ascii) = nil then dllLoaded:=false;
+    pointer(libusb_try_lock_events) := GetProcedureAddress(dllHandle, 'libusb_try_lock_events');
+    if pointer(libusb_try_lock_events) = nil then dllLoaded:=false;
+    pointer(libusb_lock_events) := GetProcedureAddress(dllHandle, 'libusb_lock_events');
+    if pointer(libusb_lock_events) = nil then dllLoaded:=false;
+    pointer(libusb_unlock_events) := GetProcedureAddress(dllHandle, 'libusb_unlock_events');
+    if pointer(libusb_unlock_events) = nil then dllLoaded:=false;
+    pointer(libusb_event_handling_ok) := GetProcedureAddress(dllHandle, 'libusb_event_handling_ok');
+    if pointer(libusb_event_handling_ok) = nil then dllLoaded:=false;
+    pointer(libusb_event_handler_active) := GetProcedureAddress(dllHandle, 'libusb_event_handler_active');
+    if pointer(libusb_event_handler_active) = nil then dllLoaded:=false;
+    pointer(libusb_lock_event_waiters) := GetProcedureAddress(dllHandle, 'libusb_lock_event_waiters');
+    if pointer(libusb_lock_event_waiters) = nil then dllLoaded:=false;
+    pointer(libusb_unlock_event_waiters) := GetProcedureAddress(dllHandle, 'libusb_unlock_event_waiters');
+    if pointer(libusb_unlock_event_waiters) = nil then dllLoaded:=false;
+    pointer(libusb_wait_for_event) := GetProcedureAddress(dllHandle, 'libusb_wait_for_event');
+    if pointer(libusb_wait_for_event) = nil then dllLoaded:=false;
+    pointer(libusb_handle_events_timeout) := GetProcedureAddress(dllHandle, 'libusb_handle_events_timeout');
+    if pointer(libusb_handle_events_timeout) = nil then dllLoaded:=false;
+    pointer(libusb_handle_events_timeout_completed) := GetProcedureAddress(dllHandle, 'libusb_handle_events_timeout_completed');
+    if pointer(libusb_handle_events_timeout_completed) = nil then dllLoaded:=false;
+    pointer(libusb_handle_events) := GetProcedureAddress(dllHandle, 'libusb_handle_events');
+    if pointer(libusb_handle_events) = nil then dllLoaded:=false;
+    pointer(libusb_handle_events_completed) := GetProcedureAddress(dllHandle, 'libusb_handle_events_completed');
+    if pointer(libusb_handle_events_completed) = nil then dllLoaded:=false;
+    pointer(libusb_handle_events_locked) := GetProcedureAddress(dllHandle, 'libusb_handle_events_locked');
+    if pointer(libusb_handle_events_locked) = nil then dllLoaded:=false;
+    pointer(libusb_pollfds_handle_timeouts) := GetProcedureAddress(dllHandle, 'libusb_pollfds_handle_timeouts');
+    if pointer(libusb_pollfds_handle_timeouts) = nil then dllLoaded:=false;
+    pointer(libusb_get_next_timeout) := GetProcedureAddress(dllHandle, 'libusb_get_next_timeout');
+    if pointer(libusb_get_next_timeout) = nil then dllLoaded:=false;
+    pointer(libusb_get_pollfds) := GetProcedureAddress(dllHandle, 'libusb_get_pollfds');
+    if pointer(libusb_get_pollfds) = nil then dllLoaded:=false;
+    pointer(libusb_set_pollfd_notifiers) := GetProcedureAddress(dllHandle, 'libusb_set_pollfd_notifiers');
+    if pointer(libusb_set_pollfd_notifiers) = nil then dllLoaded:=false;
+  end
+  else
+    dllLoaded:=false;
 End;
 
 Procedure deinitDLL;
 Begin
-  if dllHandle <> 0 then
+  if dllHandle <> NilHandle then
     FreeLibrary(dllHandle);
 End;
 
