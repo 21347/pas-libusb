@@ -45,9 +45,9 @@
  *   {!$DEFINE STATIC_LIBUSB}
  *)
  
-{$DEFINE STATIC_LIBUSB}
+{!$DEFINE STATIC_LIBUSB}
 
-Unit LibUsb;
+Unit usb.LibUsb;
 
 {$mode objfpc}
 {$PACKRECORDS C}

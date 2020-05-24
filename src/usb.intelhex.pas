@@ -18,7 +18,7 @@
  ***************************************************************************)
 
 {$MODE OBJFPC}
-Unit IntelHex;
+Unit usb.IntelHex;
 
 Interface
 

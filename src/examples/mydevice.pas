@@ -24,7 +24,7 @@ Unit MyDevice;
 Interface
 
 Uses
-  Classes,SysUtils,CTypes,LibUsb,LibUsbOop,LibUsbUtil,EZUSB;
+  Classes,SysUtils,CTypes,usb.LibUsb,usb.LibUsbOop,usb.LibUsbUtil,usb.EZUSB;
 
 Const
   USBVendEmpty  = $0547;   // Cypress

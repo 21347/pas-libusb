@@ -1,5 +1,5 @@
 {$MODE OBJFPC}
-Unit PasLibUsbUtils;
+Unit usb.PasLibUsbUtils;
 
 Interface
 

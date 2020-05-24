@@ -13,7 +13,7 @@
  *   GNU Lesser General Public License for more details.                   *
  *                                                                         *
  ***************************************************************************)
-Unit LibUsbOop;
+Unit usb.LibUsbOop;
 
 {$mode objfpc}{$H+}
 
@@ -27,7 +27,7 @@ Unit LibUsbOop;
 Interface
 
 Uses
-  Classes, SysUtils, LibUsb;
+  Classes, SysUtils, usb.LibUsb;
 
 Type
 

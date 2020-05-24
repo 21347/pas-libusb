@@ -32,7 +32,7 @@ Program Test1Library;
 
 {$mode objfpc}{$H+}
 
-Uses usb.LibUsb,usb.LibUsbOop,SysUtils;
+Uses LibUsb,LibUsbOop,SysUtils;
 
 Const SpeedName : Array[0..4] of String = (
        'Unknown',

@@ -18,10 +18,10 @@
  ***************************************************************************)
 
 {$MODE OBJFPC}
-Unit EZUSB;
+Unit usb.EZUSB;
 
 Interface
-Uses LibUSB,USB,IntelHex;
+Uses usb.LibUSB, usb.USB, usb.IntelHex;
 
 Type
 

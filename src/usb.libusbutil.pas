@@ -13,13 +13,13 @@
  *   GNU Lesser General Public License for more details.                   *
  *                                                                         *
  ***************************************************************************)
-Unit LibUsbUtil;
+Unit usb.LibUsbUtil;
 
 {$mode objfpc}{$H+}
 
 Interface
 
-Uses LibUsb,LibUsbOop;
+Uses usb.LibUsb,usb.LibUsbOop;
 
 Type
 
