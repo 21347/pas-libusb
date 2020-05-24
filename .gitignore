@@ -1,3 +1,8 @@
 src/backup
 src/examples/backup
 src/examples/lib
+*.bak
+*.lps
+*.dbg
+src/examples/test1library
+*.exe
