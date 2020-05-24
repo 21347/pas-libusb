@@ -69,9 +69,9 @@ Begin
       Begin
         Addr     := TLibUsbContext.GetDeviceAddress   (DevList[I]);
         Bus      := TLibUsbContext.GetBusNumber       (DevList[I]);
-        if assigned(LibUsb.libusb_get_port_number) then  // Not defined for older versions of libusb-1.0
+        if assigned(usb.LibUsb.libusb_get_port_number) then  // Not defined for older versions of libusb-1.0
           Port     := TLibUsbContext.GetPortNumber      (DevList[I]);
-        if assigned(LibUsb.libusb_get_port_path) then    // Not defined for older versions of libusb-1.0
+        if assigned(usb.LibUsb.libusb_get_port_path) then    // Not defined for older versions of libusb-1.0
           PortPath :=        Context.GetPortPath        (DevList[I]);
         Speed    := TLibUsbContext.GetDeviceSpeed     (DevList[I]);
         DevDesc  := TLibUsbContext.GetDeviceDescriptor(DevList[I]);
