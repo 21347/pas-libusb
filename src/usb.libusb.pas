@@ -1423,8 +1423,18 @@ Begin
 {$IFDEF WINDOWS}
   dllHandle := LoadLibrary('libusb-1.0.dll');
 {$ELSE}
-  dllHandle := LoadLibrary('libusb-1.0.so');
+  //depending on the linux version and the specific settings for loading shared
+  //libraries, the version ".0" after the file ending of the so-lib has to be
+  //in- or excluded. See e.g. the GTK2 bindings for an array based example of
+  //probing library names, we'll use the simple approach of trying the exact
+  //version first (which was tested to work on SUSE), and a general one afterwards
+  //(this should work e.g. on Ubuntu or Debian based systems, while it failed
+  //on SUSE).
+  dllHandle := LoadLibrary('libusb-1.0.so.0');
+  if dllHandle = NilHandle then
+    dllHandle := LoadLibrary('libusb-1.0.so');
 {$ENDIF}
+
   if dllHandle <> NilHandle then begin
     //default to success
     dllLoaded := true;
