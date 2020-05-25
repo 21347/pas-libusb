@@ -84,11 +84,18 @@ Begin
               Write('->',PortPath[J]);
           End;
         Write(', Speed: ');
-        if Speed < High(SpeedName) then
+        if Speed <= High(SpeedName) then
           Write(SpeedName[Speed])
         else
           Write('unknown (',Speed,')');
         WriteLn;
+        Write('  -> Serial: ');
+        try
+          WriteLn(Context.GetSerialNumber(DevList[I]));
+        except
+          on e: Exception do
+            WriteLn(e.Message);
+        end;
       End;
     Context.FreeDeviceList(DevList);
   finally

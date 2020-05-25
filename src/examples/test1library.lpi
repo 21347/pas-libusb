@@ -37,6 +37,7 @@
       <Unit>
         <Filename Value="../usb.libusboop.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="usb.LibUsbOop"/>
       </Unit>
       <Unit>
         <Filename Value="../usb.libusbutil.pas"/>
