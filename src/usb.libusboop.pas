@@ -1516,16 +1516,36 @@ Begin
 End;
 
 Class Function ELibUsb.Check(AResult : Integer; Const Msg : String) : Integer;
+var
+  errName:string;
+  errNameChar:PChar;
 Begin
-  if AResult < 0 then
-    raise ELibUsb.Create(AResult,Msg);
+  if AResult < 0 then begin
+    //Get error name from libusb
+    errNameChar:=PChar(libusb_error_name(AResult));
+    if errNameChar<>nil then
+      errName:=' ('+StrPas(errNameChar)+')'
+    else
+      errName:=' (no further info available)';
+    raise ELibUsb.Create(AResult,Msg+errName);
+  end;
   Result := AResult;
 End;
 
 Class Function ELibUsb.CheckFmt(AResult : Integer; Const Msg : String; Const Args : Array Of Const) : Integer;
+var
+  errName:string;
+  errNameChar:PChar;
 Begin
-  if AResult < 0 then
-    raise ELibUsb.CreateFmt(AResult,Msg,Args);
+  if AResult < 0 then begin
+    //Get error name from libusb
+    errNameChar:=PChar(libusb_error_name(AResult));
+    if errNameChar<>nil then
+      errName:=' ('+StrPas(errNameChar)+')'
+    else
+      errName:=' (no further info available)';
+    raise ELibUsb.CreateFmt(AResult,Msg+errName,Args);
+  end;
   Result := AResult;
 End;
 
