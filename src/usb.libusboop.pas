@@ -994,7 +994,7 @@ Function TLibUsbInterface.FindEndpoint(MatchFunc : TLibUsbEndpointMatchMethod) :
 Var IEP : Integer;
 Begin
   For IEP := 0 to FInterface^.bNumEndpoints-1 do
-    if MatchFunc(@(FInterface^.endpoint^[IEP])) then
+    if MatchFunc(@({$R-}FInterface^.endpoint^[IEP])) then
       Exit(@(FInterface^.endpoint^[IEP]));
   Result := Nil;
 End;
