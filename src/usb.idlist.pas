@@ -29,11 +29,13 @@ type
     vendorID, deviceID, interfaceID: word;
     name: string;
   end;
+  PUSBDeviceListEntry = ^TUSBDeviceListEntry;
 
   TUSBVendorEntry = record
     vendorID: word;
     name: string;
   end;
+  PUSBVendorEntry = ^TUSBVendorEntry;
 
 var
   {Memory based list of USB device names}
@@ -172,7 +174,7 @@ var
   venPos, devPos:integer;
 
   {Advance devPos and ensure that the list is long enough}
-  function NextDev:integer;
+  function NextDev:PUSBDeviceListEntry;
   begin
     Inc(devPos);
     Inc(MemoryDeviceListSize);
@@ -181,11 +183,11 @@ var
       Inc(devCount, 32);
       SetLength(MemoryDeviceList, devCount);
     end;
-    result:=devPos;
+    result:=@MemoryDeviceList[devPos];
   end;
-       
+
   {Advance venPos and ensure that the list is long enough}
-  function NextVen:integer;
+  function NextVen:PUSBVendorEntry;
   begin
     Inc(venPos);
     Inc(MemoryVendorListSize);
@@ -194,7 +196,7 @@ var
       Inc(venCount, 32);
       SetLength(MemoryVendorList, venCount);
     end;
-    result:=venPos;
+    result:=@MemoryVendorList[venPos];
   end;
 begin
   DiscardMemoryDatabase;
@@ -234,7 +236,7 @@ begin
         part1:=Copy(line, 1, 4);
         part2:=Copy(line, 7, Length(line)-6);
         if not Word.TryParse('$'+part1, lastInterfaceID) then continue;
-        with MemoryDeviceList[NextDev] do begin
+        with NextDev^ do begin
           vendorID:=lastVendorID;
           deviceID:=lastDeviceID;
           interfaceID:=lastInterfaceID;
@@ -247,7 +249,7 @@ begin
         part1:=Copy(line, 1, 4);
         part2:=Copy(line, 7, Length(line)-6);
         if not Word.TryParse('$'+part1, lastDeviceID) then continue;
-        with MemoryDeviceList[NextDev] do begin
+        with NextDev^ do begin
           vendorID:=lastVendorID;
           deviceID:=lastDeviceID;
           interfaceID:=0;
@@ -260,7 +262,7 @@ begin
         part1:=Copy(line, 1, 4);
         part2:=Copy(line, 7, Length(line)-6);
         if not Word.TryParse('$'+part1, lastVendorID) then continue;
-        with MemoryVendorList[NextVen] do begin
+        with NextVen^ do begin
           vendorID:=lastVendorID;
           name:=part2;
         end;
