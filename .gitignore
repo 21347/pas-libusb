@@ -1,0 +1,8 @@
+lib/
+*.bak
+*.lps
+backup/
+heap.trc
+*.dbg
+.directory
+.DS_Store
